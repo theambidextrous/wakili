@@ -1,23 +1,19 @@
 import streamlit as st
 import lancedb
-from openai import OpenAI
-from dotenv import load_dotenv
+# 1. Replace OpenAI import with LangChain Ollama
+from langchain_ollama import ChatOllama
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 
-# Load environment variables
-load_dotenv()
+# 2. Initialize Ollama Client (No API Key needed)
+# Ensure Ollama is running locally
+llm = ChatOllama(
+    model="llama3", 
+    temperature=0.7,
+    # other models: mistral, phi3, gemma2
+)
 
-# Initialize OpenAI client
-client = OpenAI()
-
-
-# Initialize LanceDB connection
 @st.cache_resource
 def init_db():
-    """Initialize database connection.
-
-    Returns:
-        LanceDB table object
-    """
     db = lancedb.connect("data/lancedb")
     return db.open_table("docling")
 
@@ -46,7 +42,7 @@ def get_context(query: str, table, num_results: int = 5) -> str:
         source_parts = []
         if filename:
             source_parts.append(filename)
-        if page_numbers:
+        if len(page_numbers):
             source_parts.append(f"p. {', '.join(str(p) for p in page_numbers)}")
 
         source = f"\nSource: {' - '.join(source_parts)}"
@@ -58,37 +54,30 @@ def get_context(query: str, table, num_results: int = 5) -> str:
     return "\n\n".join(contexts)
 
 
-def get_chat_response(messages, context: str) -> str:
-    """Get streaming response from OpenAI API.
-
-    Args:
-        messages: Chat history
-        context: Retrieved context from database
-
-    Returns:
-        str: Model's response
-    """
-    system_prompt = f"""You are a helpful assistant that answers questions based on the provided context.
-    Use only the information from the context to answer questions. If you're unsure or the context
-    doesn't contain the relevant information, say so.
+def get_chat_response(messages, context: str):
+    # Updated natural prompt
+    system_prompt = f"""You are a helpful and conversational assistant. 
+    Use the following pieces of retrieved information to answer the user's request.
     
-    Context:
+    IMPORTANT RULES:
+    1. Do NOT start your response with "Based on the context" or "According to the document."
+    2. Do NOT mention that you have been provided with context.
+    3. Speak naturally, like a human expert who simply knows this information.
+    4. If the information isn't in the provided text, just say you don't know—don't mention the "context."
+
+    Information to use:
     {context}
     """
+    
+    formatted_messages = [SystemMessage(content=system_prompt)]
+    for msg in messages:
+        if msg["role"] == "user":
+            formatted_messages.append(HumanMessage(content=msg["content"]))
+        elif msg["role"] == "assistant":
+            formatted_messages.append(AIMessage(content=msg["content"]))
 
-    messages_with_context = [{"role": "system", "content": system_prompt}, *messages]
-
-    # Create the streaming response
-    stream = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=messages_with_context,
-        temperature=0.7,
-        stream=True,
-    )
-
-    # Use Streamlit's built-in streaming capability
-    response = st.write_stream(stream)
-    return response
+    stream = llm.stream(formatted_messages)
+    return st.write_stream(stream)
 
 
 # Initialize Streamlit app
