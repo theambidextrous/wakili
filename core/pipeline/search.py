@@ -14,9 +14,9 @@ class Search:
         # --------------------------------------------------------------
         self.table = self.db.open_table("docling")
     
-    def perform_search(self, query):
+    def perform_search(self, query, limit=3):
         # --------------------------------------------------------------
         # Search the table
         # --------------------------------------------------------------
-        result = self.table.search(query=query, query_type="vector").limit(3)
+        result = self.table.search(query=query, query_type="vector").limit(limit)
         return result.to_pandas()

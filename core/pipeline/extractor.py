@@ -27,7 +27,7 @@ class TextExtractor:
         sitemap_urls = get_sitemap_urls(url)
         conv_results_iter = self.converter.convert_all(sitemap_urls)
         docs = []
-        for result in conv_results_iter:
+        for i, result in enumerate(conv_results_iter):
             if result.document:
                 document = result.document
                 docs.append(document)

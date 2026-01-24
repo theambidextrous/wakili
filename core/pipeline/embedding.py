@@ -16,32 +16,31 @@ class LanceDataStore:
         # Prepare the chunks for the table
         # --------------------------------------------------------------
         # Create table with processed chunks
-        processed_chunks = [
-            {
-                "text": chunk.text,
-                "metadata": {
-                    "filename": chunk.meta.origin.filename,
-                    "page_numbers": [
-                        page_no
-                        for page_no in sorted(
-                            set(
-                                prov.page_no
-                                for item in chunk.meta.doc_items
-                                for prov in item.prov
-                            )
-                        )
-                    ]
-                    or None,
-                    "title": chunk.meta.headings[0] if chunk.meta.headings else None,
-                },
-            }
-            for chunk in chunks
-        ]
+        processed_chunks = []
+        
+        for chunk in chunks:
+            page_numbers = sorted(
+                set(
+                    prov.page_no
+                    for item in chunk.meta.doc_items
+                    for prov in item.prov
+                )
+            )
+            processed_chunks.append(
+                {
+                    "text": chunk.text,
+                    "metadata": {
+                        "filename": chunk.meta.origin.filename,
+                        "page_numbers": page_numbers,  # empty list if there are no pages
+                        "title": chunk.meta.headings[0] if chunk.meta.headings else None,
+                    },
+                }
+            )
 
         # --------------------------------------------------------------
         # Add the chunks to the table (automatically embeds the text)
         # --------------------------------------------------------------
-
+        # print("data", processed_chunks)
         self.table.add(processed_chunks)
     
     def table_to_pandas_df(self):
