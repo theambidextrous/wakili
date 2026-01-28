@@ -2,14 +2,19 @@ import lancedb
 from pipeline.model import Chunks
 
 class LanceDataStore:
-    def __init__(self):
+    def __init__(self, table_name="docling"):
         # --------------------------------------------------------------
         # Create a LanceDB database and table
         # --------------------------------------------------------------
 
         # Create a LanceDB database
-        self.db = lancedb.connect("data/lancedb")
-        self.table = self.db.create_table("docling", schema=Chunks, mode="overwrite")
+        db = lancedb.connect("data/lancedb")
+        if table_name in db.table_names():
+            print(f"Table '{table_name}' already exists.")
+            self.table = db.open_table(table_name)
+        else:
+            print(f"Creating table '{table_name}'.")
+            self.table = db.create_table(table_name, schema=Chunks, mode="overwrite")
     
     def add_data_to_table(self, chunks):
         # --------------------------------------------------------------

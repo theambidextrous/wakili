@@ -1,0 +1,10 @@
+fastapi[all]
+sqlmodel
+authlib
+itsdangerous
+httpx
+lancedb
+sentence-transformers
+ollama
+psycopg2-binary
+python-dotenv
