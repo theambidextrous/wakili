@@ -22,7 +22,7 @@ HEADERS = {
     "Upgrade-Insecure-Requests": "1"
 }
 
-lds = LanceDataStore("kenya_laws")
+lds = LanceDataStore()
 chunker = Chunker()
 
 class AdvancedTextExtractor:

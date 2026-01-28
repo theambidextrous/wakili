@@ -1,9 +1,7 @@
-from time import time
 from docling.document_converter import DocumentConverter
 from utils.sitemap import get_sitemap_urls
 import os
 import requests
-import time
 from spire.doc import Document, FileFormat
 
 OUTPUT_DIR = "../law_files"

@@ -1,28 +1,15 @@
-import lancedb
-from pipeline.model import Chunks
+from utils.db import DBClient
 
-class LanceDataStore:
-    def __init__(self, table_name="docling"):
-        # --------------------------------------------------------------
-        # Create a LanceDB database and table
-        # --------------------------------------------------------------
-
-        # Create a LanceDB database
-        db = lancedb.connect("data/lancedb")
-        if table_name in db.table_names():
-            print(f"Table '{table_name}' already exists.")
-            self.table = db.open_table(table_name)
-        else:
-            print(f"Creating table '{table_name}'.")
-            self.table = db.create_table(table_name, schema=Chunks, mode="overwrite")
+class LanceDataStore(DBClient):
+    def __init__(self):
+        super().__init__()
+        self.table = self.connection()
     
     def add_data_to_table(self, chunks):
         # --------------------------------------------------------------
         # Prepare the chunks for the table
         # --------------------------------------------------------------
-        # Create table with processed chunks
         processed_chunks = []
-        
         for chunk in chunks:
             page_numbers = sorted(
                 set(
@@ -41,7 +28,6 @@ class LanceDataStore:
                     },
                 }
             )
-
         # --------------------------------------------------------------
         # Add the chunks to the table (automatically embeds the text)
         # --------------------------------------------------------------
