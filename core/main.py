@@ -1,65 +1,69 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer
-import ollama
 from utils.db import DBClient
+from datetime import datetime
+from api import chat, auth
 
 app = FastAPI()
 
+# Initialize global resources
 embed_model = SentenceTransformer('all-MiniLM-L6-v2')
-
 db = DBClient()
 
-class QueryRequest(BaseModel):
-    prompt: str
+# Setup resources for chat API
+chat.setup_chat_resources(embed_model, db)
 
-@app.post("/chat")
-async def chat_endpoint(request: QueryRequest):
-    try:
-        # 1. Embed and Search
-        query_vector = embed_model.encode(request.prompt).tolist()
-        table = db.connection()
-        results = table.search(query_vector).limit(3).to_list()
-        
-        context = "\n\n".join([r['text'] for r in results])
+# Include routers
+app.include_router(chat.router)
+app.include_router(auth.router)
 
-        # 2. Humanizing System Rules
-        # These rules prevent the "AI-sounding" repetitive patterns
-        system_prompt = f"""
-        You are a friendly, grounded, and helpful human assistant.
-        
-        CONTEXT:
-        {context}
 
-        RULES:
-        1. Use the CONTEXT to answer the user, but speak naturally.
-        2. DO NOT say "Based on the documents" or "The context states." Just answer.
-        3. If the answer isn't in the context, say you're not sure, but don't be robotic.
-        4. Use a warm, conversational tone. Be concise but helpful.
-        5. If the user says 'Hi' or 'Hello', just be friendly and ask how you can help.
-        6. User your own knowledge to handle greetings if any
-        7. Avoid referrencing the context in your response, give the answer naturally
-        """
+@app.get("/")
+async def root():
+    return {"status": "Wakili API is running"}
 
-        # 3. Use Llama 3 Instruct Format
-        # This structure helps Llama 3 specifically stay in character
-        response = ollama.chat(
-            model='llama3',
-            messages=[
-                {'role': 'system', 'content': system_prompt},
-                {'role': 'user', 'content': request.prompt},
-            ],
-            options={
-                'temperature': 0.7, # Adds a touch of "personality" variability
-                'top_p': 0.9,
-            }
-        )
-
-        return {
-            "answer": response['message']['content'],
-            "sources": [r.get('metadata', {}).get('filename', 'Unknown') for r in results]
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for all services"""
+    health_status = db.health_check()
+    
+    return {
+        "status": "healthy" if all(health_status.values()) else "degraded",
+        "timestamp": datetime.now().isoformat(),
+        "services": {
+            "api": True,
+            "embedding_model": embed_model is not None,
+            **health_status
         }
+    }
 
+# Add a test endpoint to verify both databases work
+@app.get("/test-db")
+async def test_databases():
+    """Test both database connections"""
+    try:
+        # Test LanceDB
+        lance_table = db.connection()
+        lance_count = lance_table.count_rows()
+        
+        # Test PostgreSQL
+        pg_conn = db.connection_pgsql()
+        with pg_conn.cursor() as cursor:
+            cursor.execute("SELECT COUNT(*) as count FROM users")
+            pg_result = cursor.fetchone()
+        
+        return {
+            "lancedb": {
+                "connected": True,
+                "table": db.lance_table_name,
+                "row_count": lance_count
+            },
+            "postgresql": {
+                "connected": True,
+                "database": db.pg_database,
+                "user_count": pg_result["count"] if pg_result else 0
+            }
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
