@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from sentence_transformers import SentenceTransformer
 from utils.db import DBClient
 from datetime import datetime
-from api import chat, auth
+from api import chat, auth, payment
 
 app = FastAPI()
 
@@ -16,6 +16,7 @@ chat.setup_chat_resources(embed_model, db)
 # Include routers
 app.include_router(chat.router)
 app.include_router(auth.router)
+app.include_router(payment.router)
 
 
 @app.get("/")
