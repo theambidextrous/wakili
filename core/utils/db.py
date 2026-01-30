@@ -81,9 +81,12 @@ class DBClient:
                 username VARCHAR(50) UNIQUE NOT NULL,
                 email VARCHAR(100) UNIQUE NOT NULL,
                 password_hash VARCHAR(255) NOT NULL,
+                email_verified BOOLEAN DEFAULT FALSE,
+                email_verification_code VARCHAR(6),
+                email_verification_expires_at TIMESTAMP,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                is_active BOOLEAN DEFAULT TRUE
+                is_active BOOLEAN DEFAULT FALSE
             )
             """,
             """
@@ -107,11 +110,36 @@ class DBClient:
             )
             """,
             """
+            CREATE TABLE IF NOT EXISTS user_credits (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+                amount DECIMAL(12, 3) NOT NULL DEFAULT 0,
+                expires_at TIMESTAMP NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                is_active BOOLEAN DEFAULT TRUE
+            )
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS credit_transactions (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                transaction_type VARCHAR(20) NOT NULL,
+                amount DECIMAL(12, 3) NOT NULL,
+                description TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+            """,
+            """
             CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
             CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
             CREATE INDEX IF NOT EXISTS idx_sessions_token ON user_sessions(token);
             CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON user_sessions(user_id);
             CREATE INDEX IF NOT EXISTS idx_chat_history_user_id ON chat_history(user_id);
+            CREATE INDEX IF NOT EXISTS idx_user_credits_user_id ON user_credits(user_id);
+            CREATE INDEX IF NOT EXISTS idx_user_credits_expires ON user_credits(expires_at);
+            CREATE INDEX IF NOT EXISTS idx_credit_transactions_user_id ON credit_transactions(user_id);
+            CREATE INDEX IF NOT EXISTS idx_credit_transactions_created ON credit_transactions(created_at);
             """
         ]
         
