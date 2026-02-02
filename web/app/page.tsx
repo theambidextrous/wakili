@@ -1,65 +1,80 @@
 import Image from "next/image";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(ellipse_at_top_right,_var(--wakili-primary)/5,_transparent)]">
+      <main
+        className="mx-2 w-full max-w-6xl min-h-screen bg-white/95 dark:bg-black/90 py-8 px-6 md:px-12 lg:px-20 rounded-none side-shadow"
+      >
+        <Header activePage="home" />
+
+        <section className="mt-3 grid gap-6 sm:grid-cols-2 sm:items-center">
+          <div>
+            <h2 className="text-4xl font-normal leading-tight sm:text-5xl text-[var(--wakili-neutral)]">
+              Need legal help? <br></br> <span className="font-medium">Ask Wakili.</span>
+            </h2>
+         
+            <ul className="mt-6 flex flex-wrap gap-3 text-sm text-zinc-700">
+              <li className="inline-flex items-center gap-2">⚖️ Know your rights</li>
+              <li className="inline-flex items-center gap-2">📜 Legal drafting</li>
+              <li className="inline-flex items-center gap-2">🔎 Kenyan law research</li>
+            </ul>
+
+            <div className="mt-12 flex flex-col gap-3 sm:flex-row">
+              <a
+                href="/signup"
+                className="w-48 text-center inline-flex items-center justify-center rounded-full bg-[var(--wakili-primary)] px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[var(--wakili-primary-dark)]"
+              >
+                Create account
+              </a>
+              <a
+                href="/signin"
+                className=" w-32 text-center inline-flex items-center justify-center rounded-full border border-[var(--wakili-primary)] px-6 py-3 text-sm font-semibold text-[var(--wakili-primary)] hover:bg-[var(--wakili-primary)]/10"
+              >
+                Sign in
+              </a>
+            </div>
+
+            
+          </div>
+
+          <div className="order-first sm:order-last flex items-center justify-center">
+            <div className="w-full max-w-[560px]">
+              <div className="w-full h-[220px] sm:h-[320px] md:h-[420px] overflow-hidden rounded-md">
+                <Image
+                  src="/ask-wakili-hm.png"
+                  alt="Ask Wakili — Kenyan legal assistance"
+                  width={1200}
+                  height={800}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <Footer />
       </main>
+
+      {/* Mobile CTA bar */}
+      <div className="fixed bottom-6 left-1/2 z-40 w-[90%] -translate-x-1/2 sm:hidden">
+        <div className="flex items-center justify-between gap-3 rounded-full bg-white/95 p-2 shadow-md">
+          <a
+            href="/signin"
+            className="flex-1 rounded-full px-4 py-3 text-center text-sm font-semibold text-[var(--wakili-primary)] border border-[var(--wakili-primary)]"
+          >
+            Sign In
+          </a>
+          <a
+            href="/signup"
+            className="flex-1 rounded-full bg-[var(--wakili-primary)] px-4 py-3 text-center text-sm font-semibold text-white"
+          >
+            Sign Up
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
