@@ -30,13 +30,13 @@ class EmailService:
         """Generate a 6-digit verification code"""
         return ''.join(secrets.choice(string.digits) for _ in range(6))
     
-    def send_verification_email(self, email: str, username: str, verification_code: str) -> bool:
+    def send_verification_email(self, email: str, name: str, verification_code: str) -> bool:
         """
         Send email verification code to user
         
         Args:
             email: User's email address
-            username: User's username
+            name: User's name
             verification_code: 6-digit verification code
             
         Returns:
@@ -54,7 +54,7 @@ class EmailService:
             <html>
                 <body style="font-family: Arial, sans-serif;">
                     <h2>Welcome to Wakili!</h2>
-                    <p>Hi {username},</p>
+                    <p>Hi {name},</p>
                     <p>Thank you for registering. Please verify your email address to activate your account.</p>
                     
                     <div style="background-color: #f0f0f0; padding: 20px; border-radius: 5px; margin: 20px 0;">
@@ -76,7 +76,7 @@ class EmailService:
             text_body = f"""
             Welcome to Wakili!
             
-            Hi {username},
+            Hi {name},
             
             Thank you for registering. Please verify your email address to activate your account.
             

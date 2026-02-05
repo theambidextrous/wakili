@@ -4,13 +4,13 @@ import Link from "next/link";
 export default function Header({ activePage }: { activePage?: string }) {
   return (
     <header className="flex items-center justify-between py-6">
-      <div className="flex items-center gap-3">
+      <Link href="/" className="flex items-center gap-3 cursor-pointer">
         <Image src="/wakili-logo-sm-icon.png" alt="Wakili" width={70} height={48} />
         <div>
           <h3 className="text-4xl font-semibold text-[var(--wakili-neutral)]">Wakili AI</h3>
           <p className="text-xs text-zinc-500">Kenyan Legal Assistant</p>
         </div>
-      </div>
+      </Link>
 
       <nav className="flex items-center gap-3">
         <Link

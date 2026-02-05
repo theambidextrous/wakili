@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(ellipse_at_top_right,_var(--wakili-primary)/5,_transparent)]">
       <main
-        className="mx-2 w-full max-w-6xl min-h-screen bg-white/95 dark:bg-black/90 py-8 px-6 md:px-12 lg:px-20 rounded-none side-shadow"
+        className="mx-2 w-full max-w-6xl min-h-screen bg-white/95 dark:bg-white py-8 px-6 md:px-12 lg:px-20 rounded-none side-shadow"
       >
         <Header activePage="home" />
 

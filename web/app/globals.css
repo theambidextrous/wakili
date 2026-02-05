@@ -59,3 +59,19 @@ body {
       0 18px 40px -16px rgba(0,0,0,0.22);
   }
 }
+
+/* Default form input styles: rounded, light zinc borders, comfortable padding */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  @apply w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  @apply outline-none ring-2 ring-[var(--wakili-primary)]/20 border-[var(--wakili-primary)];
+}
+

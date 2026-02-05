@@ -180,7 +180,7 @@ class AuthService:
 
         # Fetch user from database
         query = """
-            SELECT id, username, name, email, created_at
+            SELECT id, username, name, email, email_verified, created_at
             FROM users 
             WHERE id = %s AND is_active = TRUE
         """
@@ -345,7 +345,7 @@ class AuthService:
             name = payload.get("name") or email.split("@")[0]
 
             # Check if a user with this email already exists
-            query = "SELECT id, username, name, email, is_active FROM users WHERE email = %s"
+            query = "SELECT id, username, name, email,email_verified, is_active FROM users WHERE email = %s"
             result = self.db.execute_query(query, (email,))
             created = False
 

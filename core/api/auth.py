@@ -1,7 +1,7 @@
 """Authentication API endpoints"""
 
 from fastapi import APIRouter, HTTPException, Depends, Header
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, Dict, Any
 from datetime import datetime, timedelta
 
@@ -13,14 +13,23 @@ router = APIRouter(prefix="/api/v1", tags=["auth"])
 
 # Pydantic Models
 class UserCreate(BaseModel):
-    username: str
-    name: Optional[str] = None
+    username: str = Field(..., min_length=3, max_length=20, pattern=r"^[a-zA-Z0-9_-]+$")
+    name: Optional[str] = Field(None, max_length=50)
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=8)
+
+    @field_validator('password')
+    def password_complexity(cls, v):
+        if not any(char.isdigit() for char in v):
+            raise ValueError('Password must contain at least one digit')
+        return v
 
 class UserLogin(BaseModel):
-    username: str
-    password: str
+    username: str = Field(..., min_length=1)
+    password: str = Field(..., min_length=1)
+
+class ResendVerificationRequest(BaseModel):
+    email: EmailStr
 
 class Token(BaseModel):
     access_token: str
@@ -89,7 +98,7 @@ async def register(
         auth_service.update_verification_code(user_id, verification_code)
 
         # Send email with verification code
-        email_service.send_verification_email(user.email, user.username, verification_code)
+        email_service.send_verification_email(user.email, user.name, verification_code)
 
         return UserResponse(**user_data)
 
