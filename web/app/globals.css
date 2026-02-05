@@ -3,12 +3,19 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Wakili brand colors (taken from logo palette) */
+  --wakili-primary: #b37b4e; /* deep teal/green */
+  --wakili-primary-dark: #955c2e; /* darker for hover */
+  --wakili-accent: #d93f2a; /* accent (Kenyan red) */
+  --wakili-neutral: #0b1220; /* dark neutral for headings */
+  --wakili-secondary: #11725b; /* lighter neutral for subheadings */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -16,11 +23,54 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+
+    --wakili-secondary: #0b5e44;
+    --wakili-secondary-dark: #084734;
+    --wakili-primary: #b37b4e; /* deep teal/green */
+    --wakili-primary-dark: #955c2e; /* darker for hover */
+    --wakili-accent: #c3402b;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Prefer SF Pro Display when available on macOS; fall back to Inter then system fonts */
+  font-family: "SF Pro Display", var(--font-sans), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* Side-only shadow utility for content container */
+.side-shadow {
+  /* left and right colored glow + soft bottom shadow for "above ground" effect */
+  box-shadow:
+    8px 0 48px -20px rgba(17,114,91,0.12),
+    -8px 0 48px -20px rgba(17,114,91,0.12),
+    0 18px 40px -16px rgba(2,6,23,0.06);
+  transition: box-shadow 220ms ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .side-shadow {
+    box-shadow:
+      8px 0 48px -20px rgba(11,94,68,0.08),
+      -8px 0 48px -20px rgba(11,94,68,0.08),
+      0 18px 40px -16px rgba(0,0,0,0.22);
+  }
+}
+
+/* Default form input styles: rounded, light zinc borders, comfortable padding */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select {
+  @apply w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  @apply outline-none ring-2 ring-[var(--wakili-primary)]/20 border-[var(--wakili-primary)];
+}
+

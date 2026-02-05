@@ -1,7 +1,7 @@
 """Authentication API endpoints"""
 
 from fastapi import APIRouter, HTTPException, Depends, Header
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, Dict, Any
 from datetime import datetime, timedelta
 
@@ -13,13 +13,23 @@ router = APIRouter(prefix="/api/v1", tags=["auth"])
 
 # Pydantic Models
 class UserCreate(BaseModel):
-    username: str
+    username: str = Field(..., min_length=3, max_length=20, pattern=r"^[a-zA-Z0-9_-]+$")
+    name: Optional[str] = Field(None, max_length=50)
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=8)
+
+    @field_validator('password')
+    def password_complexity(cls, v):
+        if not any(char.isdigit() for char in v):
+            raise ValueError('Password must contain at least one digit')
+        return v
 
 class UserLogin(BaseModel):
-    username: str
-    password: str
+    username: str = Field(..., min_length=1)
+    password: str = Field(..., min_length=1)
+
+class ResendVerificationRequest(BaseModel):
+    email: EmailStr
 
 class Token(BaseModel):
     access_token: str
@@ -29,6 +39,7 @@ class Token(BaseModel):
 class UserResponse(BaseModel):
     id: int
     username: str
+    name: Optional[str] = None
     email: str
     email_verified: bool
     created_at: datetime
@@ -36,6 +47,9 @@ class UserResponse(BaseModel):
 class VerifyEmailRequest(BaseModel):
     email: EmailStr
     code: str
+
+class GoogleToken(BaseModel):
+    id_token: str
 
 # Dependency to get database
 def get_db():
@@ -69,7 +83,7 @@ async def register(
     try:
         # Register user via service
         auth_service = AuthService(db)
-        user_data = auth_service.register_user(user.username, user.email, user.password)
+        user_data = auth_service.register_user(user.username, user.email, user.password, user.name)
         user_id = user_data["id"]
 
         # Initialize subscription with 1000 credits
@@ -84,7 +98,7 @@ async def register(
         auth_service.update_verification_code(user_id, verification_code)
 
         # Send email with verification code
-        email_service.send_verification_email(user.email, user.username, verification_code)
+        email_service.send_verification_email(user.email, user.name, verification_code)
 
         return UserResponse(**user_data)
 
@@ -136,6 +150,38 @@ async def verify_email(
             email_service.send_welcome_email(request.email, user_result[0]["username"])
     
     return result
+
+
+@router.post("/social-login/google", response_model=Token)
+async def google_social_login(
+    token: GoogleToken,
+    db = Depends(get_db)
+):
+    """Login/register a user using a Google ID token (id_token).
+
+    If a new user is created via Google sign-in, initialize their subscription and send a welcome email.
+    """
+    auth_service = AuthService(db)
+    result = auth_service.social_login_google(token.id_token)
+    user = result.get("user")
+
+    # If user was just created, initialize subscription and send welcome email
+    if result.get("created") and user:
+        try:
+            subscription_service = SubscriptionService(db)
+            subscription_service.initialize_user_subscription(user["id"])
+
+            email_service = EmailService()
+            email_service.send_welcome_email(user["email"], user.get("username"))
+        except Exception:
+            # Non-fatal: don't block login if subscription or welcome email fails
+            pass
+
+    return Token(
+        access_token=result["access_token"],
+        token_type=result["token_type"],
+        expires_in=result["expires_in"]
+    )
 
 
 @router.post("/resend-verification")
@@ -190,6 +236,7 @@ async def refresh_token(
     token_data = {
         "sub": str(current_user["id"]),
         "username": current_user["username"],
+        "name": current_user.get("name"),
         "email": current_user["email"]
     }
     access_token_expires = timedelta(hours=24)
