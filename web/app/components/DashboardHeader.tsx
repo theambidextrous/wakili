@@ -39,10 +39,10 @@ export default function DashboardHeader({
             <div className="flex items-center ml-4 lg:ml-0">
               <div className="flex-shrink-0">
                 <Image
-                  src="/logo.png"
+                  src="/wakili-logo-sm-icon.png"
                   alt="Wakili AI"
-                  width={32}
-                  height={32}
+                  width={70}
+                  height={70}
                   className="h-8 w-8"
                 />
               </div>
@@ -65,15 +65,12 @@ export default function DashboardHeader({
                   id="user-menu-button"
                 >
                   <span className="sr-only">Open user menu</span>
-                  <div className="h-8 w-8 rounded-full bg-gradient-to-r from-[var(--wakili-primary)] to-purple-600 flex items-center justify-center text-white font-semibold">
+                  <div className="h-8 w-8 rounded-full bg-[var(--wakili-primary)] flex items-center justify-center text-white font-semibold">
                     {user?.name?.charAt(0).toUpperCase() || 'U'}
                   </div>
                   <div className="ml-3 hidden md:block">
                     <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       {user?.name || 'User'}
-                    </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {user?.email || ''}
                     </div>
                   </div>
                   <svg className="ml-2 h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">

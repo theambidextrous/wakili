@@ -107,9 +107,7 @@ export default function DashboardPage() {
               <div className="py-6">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                   <ChatInterface 
-                    currentChat={currentChat}
                     onSendMessage={(message) => {
-                      // Handle sending message to API
                       console.log('Sending message:', message);
                     }}
                   />

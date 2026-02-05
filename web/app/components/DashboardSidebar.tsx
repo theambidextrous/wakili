@@ -26,7 +26,7 @@ export default function DashboardSidebar({
   onDeleteChat,
   onClose
 }: DashboardSidebarProps) {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm] = useState('');
 
   const filteredChats = chats.filter(chat =>
     chat.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -37,7 +37,7 @@ export default function DashboardSidebar({
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 mt-3">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Chat History</h2>
           {onClose && (
             <button
@@ -53,7 +53,7 @@ export default function DashboardSidebar({
         </div>
         
         {/* Search */}
-        <div className="relative">
+        {/* <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -66,12 +66,12 @@ export default function DashboardSidebar({
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[var(--wakili-primary)] focus:border-transparent"
           />
-        </div>
+        </div> */}
 
         {/* New Chat Button */}
         <button
           onClick={onNewChat}
-          className="mt-4 w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-[var(--wakili-primary)] to-purple-600 hover:from-[var(--wakili-primary-dark)] hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--wakili-primary)]"
+          className="mt-4 w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-[var(--wakili-primary)] bg-white hover:from-[var(--wakili-primary-dark)] hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--wakili-primary)]"
         >
           <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -101,7 +101,7 @@ export default function DashboardSidebar({
                     onClick={() => onSelectChat(chat)}
                     className={`w-full text-left p-3 rounded-lg transition-colors ${
                       currentChat?.id === chat.id
-                        ? 'bg-gradient-to-r from-[var(--wakili-primary)]/10 to-purple-600/10 border border-[var(--wakili-primary)]/20'
+                        ? 'bg-gradient-to-r from-[var(--wakili-primary)]/10 to-gray-600/10 border border-[var(--wakili-primary)]/20'
                         : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >

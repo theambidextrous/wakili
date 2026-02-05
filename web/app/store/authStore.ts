@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { clearAuthStorage } from '../utils/auth';
 
 export interface User {
   id: number;
@@ -42,11 +43,34 @@ export const useAuthStore = create<AuthState>()(
         isAuthenticated: true,
         recentSignup: null 
       }),
-      logout: () => set({ 
-        user: null, 
-        accessToken: null, 
-        isAuthenticated: false 
-      }),
+      logout: () => {
+        console.log('AuthStore: Logout called');
+        
+        clearAuthStorage();
+        
+        if (typeof window !== 'undefined') {
+          document.cookie = 'auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          document.cookie = 'access_token_client=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          
+          localStorage.clear();
+          
+          sessionStorage.clear();
+        }
+        
+        set({ 
+          user: null, 
+          accessToken: null, 
+          isAuthenticated: false,
+          recentSignup: null
+        });
+        
+        fetch('/api/auth/logout', { 
+          method: 'POST',
+          credentials: 'include'
+        }).catch(console.error);
+        
+        console.log('AuthStore: Logout completed');
+      },
     }),
     {
       name: 'auth-storage',

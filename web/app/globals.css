@@ -64,7 +64,6 @@ body {
 input[type="text"],
 input[type="email"],
 input[type="password"],
-textarea,
 select {
   @apply w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900;
 }
