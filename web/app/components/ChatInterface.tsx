@@ -9,6 +9,11 @@ interface Message {
   timestamp: Date;
 }
 
+interface ChatResponse {
+  response: string;
+  sources?: string[];
+}
+
 interface ChatInterfaceProps {
   onSendMessage: (message: string) => void;
 }
@@ -16,13 +21,11 @@ interface ChatInterfaceProps {
 export default function ChatInterface({ onSendMessage }: ChatInterfaceProps) {
   const now = new Date().getTime();
   const [messages, setMessages] = useState<Message[]>([
-    { id: 1, content: 'Hello! I\'m Wakili AI, your legal assistant. How can I help you today?', sender: 'assistant', timestamp: new Date(now - 3600000) },
-    { id: 2, content: 'Can you review this contract for any potential issues?', sender: 'user', timestamp: new Date(now - 1800000) },
-    { id: 3, content: 'I\'d be happy to help review your contract. Please share the document or specific sections you\'d like me to examine.', sender: 'assistant', timestamp: new Date(now - 900000) },
+    { id: 1, content: 'Hello! I\'m Wakili AI, your legal assistant. How can I help you today?', sender: 'assistant', timestamp: new Date(now - 3600000) }
   ]);
   
   const [inputMessage, setInputMessage] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -35,7 +38,6 @@ export default function ChatInterface({ onSendMessage }: ChatInterfaceProps) {
     scrollToBottom();
   }, [messages]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -47,8 +49,8 @@ export default function ChatInterface({ onSendMessage }: ChatInterfaceProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSendMessage = () => {
-    if (!inputMessage.trim()) return;
+  const handleSendMessage = async () => {
+    if (!inputMessage.trim() || isLoading) return;
 
     const newUserMessage: Message = {
       id: messages.length + 1,
@@ -57,27 +59,59 @@ export default function ChatInterface({ onSendMessage }: ChatInterfaceProps) {
       timestamp: new Date(),
     };
 
-    setMessages([...messages, newUserMessage]);
+    // Add user message immediately
+    setMessages(prev => [...prev, newUserMessage]);
     setInputMessage('');
-    setIsTyping(true);
+    setIsLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
+    // Call the backend API
+    try {
+      const response = await fetch('/api/v1/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: inputMessage,
+          // You can add other parameters here if needed
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: ChatResponse = await response.json();
+      
+      // Add assistant response
       const aiResponse: Message = {
         id: messages.length + 2,
-        content: 'I\'m analyzing your query. As an AI legal assistant, I can help with contract reviews, legal research, document analysis, and answering general legal questions. Please note that I provide informational assistance only and this does not constitute legal advice.',
+        content: data.response || 'I apologize, but I could not generate a response.',
         sender: 'assistant',
         timestamp: new Date(),
       };
+      
       setMessages(prev => [...prev, aiResponse]);
-      setIsTyping(false);
-    }, 1500);
-
-    onSendMessage(inputMessage);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      
+      // Show error message
+      const errorResponse: Message = {
+        id: messages.length + 2,
+        content: 'Sorry, I encountered an error while processing your request. Please try again.',
+        sender: 'assistant',
+        timestamp: new Date(),
+      };
+      
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
+      setIsLoading(false);
+      onSendMessage(inputMessage);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey && !isLoading) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -127,7 +161,7 @@ export default function ChatInterface({ onSendMessage }: ChatInterfaceProps) {
             </div>
           ))}
           
-          {isTyping && (
+          {isLoading && (
             <div className="flex justify-start">
               <div className="max-w-3xl mr-12">
                 <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-2xl rounded-bl-none px-4 py-3">
@@ -158,6 +192,7 @@ export default function ChatInterface({ onSendMessage }: ChatInterfaceProps) {
               className="w-full h-14 px-16 py-4 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--wakili-primary)] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none transition-colors shadow-sm"
               rows={1}
               style={{ borderRadius: '9999px' }}
+              disabled={isLoading}
             />
             
             {/* Left side: */}
@@ -165,7 +200,8 @@ export default function ChatInterface({ onSendMessage }: ChatInterfaceProps) {
               <button
                 type="button"
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 transition-colors"
+                className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isLoading}
               >
                 <svg 
                   className="h-5 w-5" 
@@ -210,18 +246,22 @@ export default function ChatInterface({ onSendMessage }: ChatInterfaceProps) {
             <button
               type="button"
               onClick={handleSendMessage}
-              disabled={!inputMessage.trim()}
+              disabled={!inputMessage.trim() || isLoading}
               className="absolute right-3 top-7 transform -translate-y-1/2 p-2 rounded-full bg-[var(--wakili-primary)] text-white hover:bg-wakili-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              <svg 
-                className="h-5 w-5" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
+              {isLoading ? (
+                <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <svg 
+                  className="h-5 w-5" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              )}
               <span className="sr-only">Send message</span>
             </button>
           </div>
