@@ -5,24 +5,41 @@ export default function Header({ activePage }: { activePage?: string }) {
   return (
     <header className="flex items-center justify-between py-6">
       <Link href="/" className="flex items-center gap-3 cursor-pointer">
-        <Image src="/wakili-logo-sm-icon.png" alt="Wakili" width={70} height={48} />
+        <Image 
+          src="/wakili-logo-sm-icon.png" 
+          alt="Wakili" 
+          width={70} 
+          height={48} 
+        />
         <div>
-          <h3 className="text-4xl font-semibold text-[var(--wakili-neutral)]">Wakili AI</h3>
-          <p className="text-xs text-zinc-500">Kenyan Legal Assistant</p>
+          <h3 className="text-4xl font-semibold text-[var(--wakili-neutral)] dark:text-gray-100">
+            Wakili AI
+          </h3>
+          <p className="text-xs text-zinc-500 dark:text-gray-400">
+            Kenyan Legal Assistant
+          </p>
         </div>
       </Link>
 
       <nav className="flex items-center gap-3">
         <Link
           href="/signin"
-          className={`hidden sm:inline-flex rounded-full px-12 py-2 text-sm font-semibold text-[var(--wakili-primary)] hover:bg-[var(--wakili-primary)]/10 ${activePage === "signin" ? "bg-[var(--wakili-primary)]/10" : ""}`}
+          className={`hidden sm:inline-flex rounded-full px-12 py-2 text-sm font-semibold text-[var(--wakili-primary)] hover:bg-[var(--wakili-primary)]/10 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white transition-colors ${
+            activePage === "signin" 
+              ? "bg-[var(--wakili-primary)]/10 dark:bg-gray-800 dark:text-white" 
+              : ""
+          }`}
         >
           Sign In
         </Link>
         { activePage && activePage !== "home" && (
             <Link
                 href="/signup"
-                className={`hidden sm:inline-flex rounded-full px-12 py-2 text-sm font-semibold text-[var(--wakili-primary)] hover:bg-[var(--wakili-primary)]/10 ${activePage === "signup" ? "bg-[var(--wakili-primary)]/10" : ""}`}
+                className={`hidden sm:inline-flex rounded-full px-12 py-2 text-sm font-semibold text-[var(--wakili-primary)] hover:bg-[var(--wakili-primary)]/10 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white transition-colors ${
+                  activePage === "signup" 
+                    ? "bg-[var(--wakili-primary)]/10 dark:bg-gray-800 dark:text-white" 
+                    : ""
+                }`}
             >
                 Sign Up
             </Link>

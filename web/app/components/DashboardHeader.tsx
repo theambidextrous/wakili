@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { User } from '../store/authStore';
 
 interface DashboardHeaderProps {
@@ -18,6 +20,12 @@ export default function DashboardHeader({
   onLogout 
 }: DashboardHeaderProps) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const router = useRouter();
+
+  const handleNavigation = (path: string) => {
+    setUserMenuOpen(false);
+    router.push(path);
+  };
 
   return (
     <header className="fixed w-full z-30 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
@@ -38,18 +46,22 @@ export default function DashboardHeader({
             
             <div className="flex items-center ml-4 lg:ml-0">
               <div className="flex-shrink-0">
-                <Image
-                  src="/wakili-logo-sm-icon.png"
-                  alt="Wakili AI"
-                  width={70}
-                  height={70}
-                  className="h-8 w-8"
-                />
+                <Link href="/dashboard">
+                  <Image
+                    src="/wakili-logo-sm-icon.png"
+                    alt="Wakili AI"
+                    width={70}
+                    height={70}
+                    className="h-8 w-8 cursor-pointer"
+                  />
+                </Link>
               </div>
               <div className="ml-3">
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Wakili AI
-                </h1>
+                <Link href="/dashboard">
+                  <h1 className="text-xl font-bold text-gray-900 dark:text-white cursor-pointer hover:text-[var(--wakili-primary)] dark:hover:text-[var(--wakili-primary)] transition-colors">
+                    Wakili AI
+                  </h1>
+                </Link>
                 <p className="text-xs text-gray-500 dark:text-gray-400">Your AI Legal Assistant</p>
               </div>
             </div>
@@ -87,36 +99,27 @@ export default function DashboardHeader({
                     <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
                   </div>
                   
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setUserMenuOpen(false);
-                    }}
+                  <button
+                    type="button"
+                    onClick={() => handleNavigation('/dashboard/profile')}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     Profile Settings
-                  </a>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setUserMenuOpen(false);
-                    }}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleNavigation('/dashboard/subscription')}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     Subscription
-                  </a>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setUserMenuOpen(false);
-                    }}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleNavigation('/dashboard/support')}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     Help & Support
-                  </a>
+                  </button>
                   <div className="border-t border-gray-200 dark:border-gray-700">
                     <button
                       onClick={() => {

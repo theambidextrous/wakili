@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function DashboardFooter() {
   return (
     <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4">
@@ -13,24 +15,24 @@ export default function DashboardFooter() {
           </div>
           
           <div className="flex items-center space-x-6">
-            <a
-              href="#"
-              className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            <Link
+              href="/privacy-policy"
+              className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
             >
               Privacy Policy
-            </a>
-            <a
-              href="#"
-              className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            </Link>
+            <Link
+              href="/terms-of-service"
+              className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
             >
               Terms of Service
-            </a>
-            <a
-              href="#"
-              className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            </Link>
+            <Link
+              href="/dashboard/support"
+              className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
             >
               Contact Support
-            </a>
+            </Link>
             <div className="flex items-center">
               <div className="h-2 w-2 rounded-full bg-green-500 mr-2"></div>
               <span className="text-xs text-green-600 dark:text-green-400">System Operational</span>

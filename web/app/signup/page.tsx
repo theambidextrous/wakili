@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useAuthStore } from "../store/authStore";
+import GoogleAuthButton from "../components/GoogleAuthButton";
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
@@ -195,36 +195,36 @@ export default function SignUpPage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(ellipse_at_top_right,_var(--wakili-primary)/5,_transparent)]">
-      <main className="mx-2 w-full max-w-6xl min-h-screen bg-white/95 dark:bg-white py-8 px-6 md:px-12 lg:px-20 rounded-none side-shadow">
+    <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(ellipse_at_top_right,_var(--wakili-primary)/5,_transparent)] dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-950">
+      <main className="mx-2 w-full max-w-6xl min-h-screen bg-white/95 dark:bg-gray-900/95 py-8 px-6 md:px-12 lg:px-20 rounded-none side-shadow dark:shadow-[0_0_30px_rgba(0,0,0,0.5)] dark:border dark:border-gray-800">
         <Header activePage="signup" />
 
         <section className="mt-6">
           <div className="max-w-md mx-auto w-72">
-            <h2 className="text-center text-2xl font-semibold">
+            <h2 className="text-center text-2xl font-semibold dark:text-gray-100">
               {verificationSuccess ? "Verification Complete!" : showVerification ? "Verify Your Email" : "Create account"}
             </h2>
             
             {/* Verification Success Message */}
             {verificationSuccess && (
-              <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg text-center">
-                <div className="text-green-600 font-semibold mb-2 text-lg">
+              <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg text-center">
+                <div className="text-green-600 dark:text-green-400 font-semibold mb-2 text-lg">
                   ✓ Email Verified Successfully!
                 </div>
-                <p className="text-sm text-green-700 mb-2">
-                  Your email <strong>{email}</strong> has been verified.
+                <p className="text-sm text-green-700 dark:text-green-300 mb-2">
+                  Your email <strong className="dark:text-green-200">{email}</strong> has been verified.
                 </p>
-                <p className="text-sm text-green-700">
+                <p className="text-sm text-green-700 dark:text-green-300">
                   You can now log in to your account.
                 </p>
-                <p className="mt-3 text-xs text-green-600">
+                <p className="mt-3 text-xs text-green-600 dark:text-green-400">
                   Redirecting to login in {verificationSuccessCountdown} seconds...
                 </p>
                 <div className="mt-4">
                   <button
                     type="button"
                     onClick={() => router.push('/signin')}
-                    className="rounded-full bg-green-600 px-4 py-2 text-white font-semibold hover:bg-green-700 transition-colors"
+                    className="rounded-full bg-green-600 dark:bg-green-700 px-4 py-2 text-white font-semibold hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
                   >
                     Go to Login Now
                   </button>
@@ -232,28 +232,28 @@ export default function SignUpPage() {
               </div>
             )}
 
-            {!showVerification && !verificationSuccess && (
-              <p className="text-center mt-2 text-sm text-zinc-600">
+            {!showVerification && !verificationSuccess && !signupSuccess && (
+              <p className="text-center mt-2 text-sm text-zinc-600 dark:text-gray-400">
                 Sign up to start using Wakili AI.
               </p>
             )}
 
             {/* Success message before verification */}
             {signupSuccess && !showVerification && !verificationSuccess && (
-              <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg text-center">
-                <div className="text-green-600 font-semibold mb-2">
+              <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg text-center">
+                <div className="text-green-600 dark:text-green-400 font-semibold mb-2">
                   ✓ Registration Successful!
                 </div>
-                <p className="text-sm text-green-700 mb-2">
-                  A verification code has been sent to <strong>{email}</strong>
+                <p className="text-sm text-green-700 dark:text-green-300 mb-2">
+                  A verification code has been sent to <strong className="dark:text-green-200">{email}</strong>
                 </p>
-                <p className="text-xs text-green-600">
+                <p className="text-xs text-green-600 dark:text-green-400">
                   Redirecting to verification in {countdown} seconds...
                 </p>
                 <button
                   type="button"
                   onClick={() => setShowVerification(true)}
-                  className="mt-3 text-sm text-[var(--wakili-primary)] underline"
+                  className="mt-3 text-sm text-[var(--wakili-primary)] dark:text-[var(--wakili-primary-light)] underline"
                 >
                   Go to verification now
                 </button>
@@ -264,20 +264,20 @@ export default function SignUpPage() {
             {showVerification && !verificationSuccess ? (
               <div className="mt-6">
                 {verificationError && (
-                  <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
+                  <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 rounded-lg text-sm">
                     {verificationError}
                   </div>
                 )}
 
-                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-gray-500">
+                <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     We&apos;ve sent a verification code to:<br />
-                    <strong className="text-gray-900">{email}</strong>
+                    <strong className="text-gray-900 dark:text-gray-200">{email}</strong>
                   </p>
                   <button
                     type="button"
                     onClick={resendVerificationCode}
-                    className="mt-2 text-sm text-[var(--wakili-primary)] underline"
+                    className="mt-2 text-sm text-[var(--wakili-primary)] dark:text-[var(--wakili-primary-light)] underline"
                   >
                     Didn&apos;t receive the code? Resend
                   </button>
@@ -293,13 +293,13 @@ export default function SignUpPage() {
                     disabled={verificationLoading}
                     pattern="\d{6}"
                     inputMode="numeric"
-                    className="w-full rounded-full border px-3 py-2 text-center text-2xl tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full rounded-full border px-3 py-2 text-center text-2xl tracking-widest disabled:opacity-50 disabled:cursor-not-allowed dark:bg-transparent dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-500 focus:dark:border-[var(--wakili-primary)] focus:dark:ring-1 focus:dark:ring-[var(--wakili-primary)] focus:dark:bg-gray-800/50 transition-colors"
                   />
                   
                   <button
                     type="submit"
                     disabled={verificationLoading || verificationCode.length !== 6}
-                    className="mt-5 rounded-full bg-[var(--wakili-primary)] px-4 py-2 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
+                    className="mt-5 rounded-full bg-[var(--wakili-primary)] dark:bg-[var(--wakili-primary)] px-4 py-2 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 dark:hover:bg-[var(--wakili-primary-dark)] transition-colors"
                   >
                     {verificationLoading ? 'Verifying...' : 'Verify Email'}
                   </button>
@@ -312,7 +312,7 @@ export default function SignUpPage() {
                       setShowVerification(false);
                       setSignupSuccess(false);
                     }}
-                    className="text-sm text-zinc-600 hover:text-zinc-800"
+                    className="text-sm text-zinc-600 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-gray-300"
                   >
                     ← Back to signup
                   </button>
@@ -323,7 +323,7 @@ export default function SignUpPage() {
               !showVerification && !verificationSuccess && !signupSuccess && (
                 <>
                   {error && (
-                    <div className="mt-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
+                    <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 rounded-lg text-sm">
                       {error}
                     </div>
                   )}
@@ -336,7 +336,7 @@ export default function SignUpPage() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       disabled={loading}
-                      className="w-full rounded-full border px-3 py-2 mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full rounded-full border px-3 py-2 mb-4 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-transparent dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-500 focus:dark:border-[var(--wakili-primary)] focus:dark:ring-1 focus:dark:ring-[var(--wakili-primary)] focus:dark:bg-gray-800/50 transition-colors"
                     />
                     <input
                       type="email"
@@ -345,7 +345,7 @@ export default function SignUpPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       disabled={loading}
-                      className="w-full rounded-full border px-3 py-2 mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full rounded-full border px-3 py-2 mb-4 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-transparent dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-500 focus:dark:border-[var(--wakili-primary)] focus:dark:ring-1 focus:dark:ring-[var(--wakili-primary)] focus:dark:bg-gray-800/50 transition-colors"
                     />
                     <input
                       type="password"
@@ -355,27 +355,21 @@ export default function SignUpPage() {
                       onChange={(e) => setPassword(e.target.value)}
                       disabled={loading}
                       minLength={6}
-                      className="w-full rounded-full border px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full rounded-full border px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-transparent dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-500 focus:dark:border-[var(--wakili-primary)] focus:dark:ring-1 focus:dark:ring-[var(--wakili-primary)] focus:dark:bg-gray-800/50 transition-colors"
                     />
                     <button
                       type="submit"
                       disabled={loading}
-                      className="mt-5 rounded-full bg-[var(--wakili-primary)] px-4 py-2 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
+                      className="mt-5 rounded-full bg-[var(--wakili-primary)] dark:bg-[var(--wakili-primary)] px-4 py-2 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 dark:hover:bg-[var(--wakili-primary-dark)] transition-colors"
                     >
                       {loading ? 'Creating account...' : 'Create account'}
                     </button>
                   </form>
 
                   <div className="mt-6 text-center">
-                    <p className="text-sm text-zinc-600">Or sign up with</p>
+                    <p className="text-sm text-zinc-600 dark:text-gray-400">Or sign up with</p>
                     <div className="mt-3 flex justify-center gap-3">
-                      <a
-                        href="/api/auth/google"
-                        className="inline-flex items-center gap-2 rounded-full border px-4 py-2 hover:bg-gray-50 transition-colors"
-                      >
-                        <Image src="/google.png" alt="Google" width={40} height={40} />
-                        Continue with Google
-                      </a>
+                      <GoogleAuthButton />
                     </div>
                   </div>
                 </>
