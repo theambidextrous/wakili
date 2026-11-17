@@ -11,6 +11,10 @@ Wakili-AI is designed to serve as a first-line legal co-pilot. It processes the 
 
 ---
 
+## 🗂️ Vectorized Db
+If you need access to an already vectorized db with all the legal documents in it, ready for use, email me: idd.otuya@outlook.com
+---
+
 ## 🛠️ Core Use Cases
 
 ### 1. Constitutional & Civil Rights 📜
@@ -61,4 +65,9 @@ Wakili-AI is designed to serve as a first-line legal co-pilot. It processes the 
 > **Wakili-AI is an AI Assistant, not a licensed Advocate of the High Court of Kenya.** > While it provides highly accurate information, its outputs do not constitute a formal advocate-client relationship. Users are encouraged to verify critical legal steps with a certified human practitioner registered with the Law Society of Kenya (LSK).
 
 ---
+
+## ⚠️ License
+The MIT License: Free to use but attribute to Idd Juma Otuya
+---
+
 **Last Updated:** January 2026
