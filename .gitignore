@@ -22,5 +22,6 @@ coverage/
 *.swp
 *.tmp
 *.old
+data
 data/
 
