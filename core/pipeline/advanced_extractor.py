@@ -6,7 +6,7 @@ from spire.doc import Document, FileFormat
 from pipeline.chunking import Chunker
 from pipeline.embedding import LanceDataStore
 
-OUTPUT_DIR = "../law_files"
+OUTPUT_DIR = "../data/law_files"
 PROCESSED_LOG = "processed_links.txt"
 FAILED_LOG = "failed_links.txt"
 DELAY_SECONDS = 5

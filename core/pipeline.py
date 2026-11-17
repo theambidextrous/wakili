@@ -1,7 +1,7 @@
 sample_pdf = "https://arxiv.org/pdf/2408.09869"
 sample_html = "https://docling-project.github.io/docling/"
 sample_sitemap_baseurl = "https://docling-project.github.io/docling/"
-text_file_with_links = "../law_files/links.txt"
+text_file_with_links = "../data/law_files/links.txt"
 # --------------------------------------------------------------
 # Extract the data
 # --------------------------------------------------------------

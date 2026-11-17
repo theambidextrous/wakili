@@ -4,7 +4,7 @@ import os
 import requests
 from spire.doc import Document, FileFormat
 
-OUTPUT_DIR = "../law_files"
+OUTPUT_DIR = "../data/law_files"
 
 class TextExtractor:
     def __init__(self):
