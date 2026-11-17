@@ -12,7 +12,12 @@ Wakili-AI is designed to serve as a first-line legal co-pilot. It processes the 
 ---
 
 ## 🗂️ Vectorized Db
-If you need access to an already vectorized db with all the legal documents in it, ready for use, email me: idd.otuya@outlook.com
+If you need access to:
+-  An already vectorized db with all the legal documents in it OR 
+- Crawled law files(pdf) - pretty much everything referenced at ../data/**
+
+Just email me at idd.otuya@outlook.com
+
 ---
 
 ## 🛠️ Core Use Cases
