@@ -22,11 +22,12 @@ services:
 
   postgres:
     image: postgres:15-alpine
-    container_name: mailhog-postgres
+    container_name: wakili-postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: mailhog_db
+      POSTGRES_USER: wak_pg_db_user
+      # '$$' escapes compose interpolation; actual password is '@s93d21n$0Ur9991' (see core/.env)
+      POSTGRES_PASSWORD: "@s93d21n$$0Ur9991"
+      POSTGRES_DB: wak_pg_db_svc
     ports:
       - "5433:5432"
     volumes:
@@ -34,7 +35,7 @@ services:
     networks:
       - wakili-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U wak_pg_db_user -d wak_pg_db_svc"]
       interval: 10s
       timeout: 5s
       retries: 5

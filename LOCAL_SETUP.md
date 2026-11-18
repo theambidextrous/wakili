@@ -167,7 +167,7 @@ docker-compose up -d
 
 ### Access PostgreSQL CLI
 ```bash
-docker-compose exec postgres psql -U postgres -d chat_app
+docker-compose exec postgres psql -U wak_pg_db_user -d wak_pg_db_svc
 ```
 
 ### Access MailHog CLI
@@ -184,11 +184,11 @@ docker-compose exec mailhog /app/MailHog -version
 JWT_SECRET_KEY=dev-secret-key-change-in-production
 ACCESS_TOKEN_EXPIRE_HOURS=24
 
-# PostgreSQL (Docker)
+# PostgreSQL (Docker) - matches docker-compose.yml
 PG_HOST=localhost
-PG_PORT=5432
-PG_DB=chat_app
-PG_USER=postgres
+PG_PORT=5433
+PG_DB=wak_pg_db_svc
+PG_USER=wak_pg_db_user
 PG_PASSWORD=password
 
 # MailHog (Docker)

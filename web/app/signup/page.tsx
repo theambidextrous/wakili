@@ -74,17 +74,23 @@ export default function SignUpPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Registration failed');
+        const message =
+          typeof data.error === 'string'
+            ? data.error
+            : data.error?.msg || 'Registration failed';
+        throw new Error(message);
       }
 
-      // Store user data in localStorage and zustand store
+      // Store user data in localStorage and zustand store.
+      // The API returns { message, user: {...} } on success.
+      const apiUser = data.user || {};
       const userData = {
-        id: data.id,
-        username: data.username,
-        name: data.name,
-        email: data.email,
-        email_verified: data.email_verified,
-        created_at: data.created_at
+        id: apiUser.id ?? 0,
+        username: apiUser.username || email.split('@')[0],
+        name: name,
+        email: apiUser.email ?? email,
+        email_verified: apiUser.email_verified ?? false,
+        created_at: apiUser.created_at || new Date().toISOString()
       };
 
       // Save to localStorage directly (as fallback)
@@ -100,7 +106,12 @@ export default function SignUpPage() {
       setCountdown(5);
       
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Registration failed';
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'string'
+            ? err
+            : 'Registration failed';
       setError(errorMessage);
       console.error('Registration error:', err);
     } finally {

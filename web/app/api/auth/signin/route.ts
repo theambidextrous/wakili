@@ -12,13 +12,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(username)) {
-      return NextResponse.json(
-        { error: 'Invalid username format' },
-        { status: 400 }
-      );
-    }
+    // Username or email may be used as the identifier; only basic presence is validated here.
+    // Format-specific validation happens against the identifier's type in the backend.
 
     const fastApiUrl = process.env.FASTAPI_BASE_URL;
     

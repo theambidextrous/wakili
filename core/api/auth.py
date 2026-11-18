@@ -13,7 +13,8 @@ router = APIRouter(prefix="/api/v1", tags=["auth"])
 
 # Pydantic Models
 class UserCreate(BaseModel):
-    username: str = Field(..., min_length=3, max_length=20, pattern=r"^[a-zA-Z0-9_-]+$")
+    # Optional: web signup sends only name/email/password; a username is derived server-side
+    username: Optional[str] = Field(None, min_length=3, max_length=50, pattern=r"^[a-zA-Z0-9_-]+$")
     name: Optional[str] = Field(None, max_length=50)
     email: EmailStr
     password: str = Field(..., min_length=8)
@@ -81,9 +82,23 @@ async def register(
 ):
     """Register a new user with initial subscription"""
     try:
+        # Derive a unique username when the client doesn't supply one
+        username = user.username
+        if not username:
+            base_username = (user.name or user.email.split("@")[0]).lower().replace(" ", "_")
+            base_username = "".join(ch for ch in base_username if ch.isalnum() or ch in "_-") or "user"
+            if len(base_username) < 3:
+                base_username = f"{base_username}user"
+            username = base_username[:50]
+            check_query = "SELECT id FROM users WHERE username = %s"
+            counter = 0
+            while db.execute_query(check_query, (username,)):
+                counter += 1
+                username = f"{base_username[:46]}{counter}"
+
         # Register user via service
         auth_service = AuthService(db)
-        user_data = auth_service.register_user(user.username, user.email, user.password, user.name)
+        user_data = auth_service.register_user(username, user.email, user.password, user.name)
         user_id = user_data["id"]
 
         # Initialize subscription with 1000 credits
@@ -186,11 +201,12 @@ async def google_social_login(
 
 @router.post("/resend-verification")
 async def resend_verification(
-    email: EmailStr,
+    request: ResendVerificationRequest,
     db = Depends(get_db)
 ):
     """Resend verification code to user email"""
     try:
+        email = request.email
         auth_service = AuthService(db)
         result = auth_service.resend_verification_code(email)
         user = result["user"]

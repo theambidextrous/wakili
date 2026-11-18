@@ -113,15 +113,19 @@ class AuthService:
             raise HTTPException(status_code=500, detail=str(e))
 
     def login_user(self, username: str, password: str) -> Dict[str, Any]:
-        """Authenticate user and return JWT token"""
+        """Authenticate user and return JWT token
+
+        Accepts either the username or the email address as the identifier,
+        since the web UI signs users in with their email.
+        """
         try:
-            # Get user from database
+            # Get user from database (match by username or email)
             query = """
                 SELECT id, username, name, email, password_hash, is_active, email_verified
                 FROM users 
-                WHERE username = %s
+                WHERE username = %s OR email = %s
             """
-            result = self.db.execute_query(query, (username,))
+            result = self.db.execute_query(query, (username, username))
 
             if not result:
                 raise HTTPException(status_code=401, detail="Invalid credentials")

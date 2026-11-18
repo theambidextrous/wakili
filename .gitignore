@@ -24,4 +24,6 @@ coverage/
 *.old
 data
 data/
+__pycache__/
+*.py[cod]
 

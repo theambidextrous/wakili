@@ -41,7 +41,6 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         name,
         email,
-        username: email,
         password,
       }),
     });
@@ -51,9 +50,19 @@ export async function POST(request: NextRequest) {
     console.log('FastAPI response:', responseData);
 
     if (!response.ok) {
-      // Pass through the error from FastAPI
+      // Extract a readable message from FastAPI's error payload.
+      // Validation failures return `detail` as an array of pydantic error objects.
+      let message = 'Registration failed';
+      const detail = responseData.detail;
+      if (typeof detail === 'string') {
+        message = detail;
+      } else if (Array.isArray(detail)) {
+        message = detail
+          .map((e: { msg?: string }) => e?.msg || 'Invalid input')
+          .join('; ');
+      }
       return NextResponse.json(
-        { error: responseData.detail || 'Registration failed' },
+        { error: message },
         { status: response.status }
       );
     }
